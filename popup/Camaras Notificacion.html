@@ -1,0 +1,55 @@
+<html>
+
+<head>
+    <meta http-equiv="MSThemeCompatible" content="Yes">
+    <title>LECTURA DE PLACAS</title>
+    <script type="text/javascript">
+        ISScustomAPI.onSetup(function (settings) {
+
+            ISScustomAPI.onEvent(function (type, id, action, params) {
+                //var data = JSON.parse(params);
+                //console.log(params);
+                var url = 'http://127.0.0.1:5000/getCamName?Id=' + id;
+
+                fetch(url)
+                    .then(response => response.text())
+                    .then((response) => {
+                        document.getElementById("camName").innerHTML = response;
+                    })
+                    .catch(err => console.log(err))
+
+                document.getElementById('info').innerHTML = action;
+                document.getElementById('timestamp').innerHTML = params.date + " " + params.time;
+                ISScustomAPI.sendReact("HTML_POPUP", "1", "SHOW");
+                ISScustomAPI.sendReact("VNS", "1", "PLAY_WAV", "file<\\wav\\cam_detach_1.wav");
+            });
+        });
+        setTimeout(() => {
+            
+            ISScustomAPI.subscribe("LPR_CAM", "*", "CAR_LP_RECOGNIZED");
+            ISScustomAPI.subscribe("LPR_CAM", "*", "CAR_WITHOUT_LP_DETECTED");
+        }, 500);
+    </script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Logo Section -->
+        <div class="logo">
+            <img src="ISS2.png" alt="ISS Logo">
+        </div>
+        <!-- Information Section -->
+        <div class="info-section">
+            <h1 id="label">LECTURA DE PLACAS</h1>
+            <h2 class="label">Cámara:</h2>
+            <p id="camName" class="highlight">xxxxx</p>
+            <h2 class="label">ALARMA:</h2>
+            <p id="info" class="highlight">xxxxx</p>
+            <h2 class="label">FECHA Y HORA DE ALARMA</h2>
+            <p id="timestamp" class="highlight">xxxxx</p>
+        </div>
+    </div>
+</body>
+
+</html>
