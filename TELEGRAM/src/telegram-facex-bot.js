@@ -1,5 +1,5 @@
 const PORT = 3008;
-const BOT_TOKEN = '';
+const BOT_TOKEN = '7612145224:AAF6HVJjCdzDJsXw4NW3-rkfP7enSxLpRWQ';
 const URL_BASE = 'http://localhost:21093';
 const REST_API_URL_BASE = 'http://telegram:telegram@localhost:8888';
 
