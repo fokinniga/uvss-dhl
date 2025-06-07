@@ -1,0 +1,37 @@
+{
+  "data": [
+    {
+      "camera_id": "5",
+      "direction_id": "1",
+      "direction_name": "aleja",
+      "number": "??????",
+      "plate_rect": "",
+      "template": "",
+      "template_country_iso_code": "",
+      "template_country_name": "",
+      "tid": "47142",
+      "time_best": "2025-06-06T18:34:13.276",
+      "time_enter": "2025-06-06T18:34:13.276",
+      "time_leave": "2025-06-06T18:34:16.336",
+      "track_id": "0",
+      "uuid": "8ac94481-a12a-4be2-9151-8d2a84c2244a"
+    },
+    {
+      "camera_id": "5",
+      "direction_id": "1",
+      "direction_name": "acerca",
+      "number": "9844ZP",
+      "plate_rect": "0.689583,0.527778,0.75625,0.606481",
+      "template": "MEX_2D-2D-2L_FED",
+      "template_country_iso_code": "MX",
+      "template_country_name": "MEXICO",
+      "tid": "47141",
+      "time_best": "2025-06-06T18:34:08.747",
+      "time_enter": "2025-06-06T18:34:07.145",
+      "time_leave": "2025-06-06T18:34:09.062",
+      "track_id": "6",
+      "uuid": "72b9e993-dfae-4199-a422-47fc3b30da1b"
+    }
+  ],
+  "status": "success"
+}
