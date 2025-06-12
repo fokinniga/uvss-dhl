@@ -72,17 +72,10 @@ sos.connect(async function (core) {
   console.clear();
   console.log("Securos conectado");
 
-  core.registerEventHandler("IMAGE_EXPORT", "1", "EXPORT_DONE", async (e) => {
-    console.log("EXPORT_DONE:", e);
-    if (e.action == "EXPORT_DONE") {
-      console.log("Archivo exportado con éxito.");
-      console.log(`Export done: ${e.params}`); // Use JSON.stringify for better logging
-    }
-  });
-
   // --- Manejador de eventos LPR_CAM ---
   core.registerEventHandler("LPR_CAM", "*", "*", async (e) => {
     console.log(`Evento LPR_CAM: ${e.action}`);
+    console.log(`Parametros generales: ${e}`)
     let fileName;
     let htmlCaption;
     const exportDirectory = "C:\\export"; 
@@ -93,12 +86,13 @@ sos.connect(async function (core) {
       console.log(`formattedDate: ${formattedDate}`)
       console.log(`Time to export string: ${expTime}`)
       console.log(`Fecha formateada para placa reconocida: ${formattedDate}`);
-      fileName = `lpr${formattedDate}.jpg`;
+      fileName = `lpr${formattedDate}.jpg`;//Creo en esta linea debe ir exptime y no formattedDate.
       htmlCaption = `
         <b>Acceso Vehículo con placas.</b>\n\n
         Fecha y hora: ${e.params.best_view_date_time}\n
-        Placa: <b>${e.params.plate_number || 'N/A'}</b>
+        Placa: <b>${e.params.plate_number || 'N/A'}</b> 
       `;
+      //revisar el parametro del número de la placa.
     } else {
       console.log("Else: ")
       console.log(e)
@@ -160,6 +154,15 @@ sos.connect(async function (core) {
       bot.telegram.sendMessage(CHAT_ID, `⚠️ Error al procesar imagen: ${error.message}`).catch(err => console.error("Error al enviar mensaje de error a Telegram:", err));
     }
   });
+
+  core.registerEventHandler("IMAGE_EXPORT", "1", "EXPORT_DONE", async (e) => {
+    console.log("EXPORT_DONE:", e);
+    if (e.action == "EXPORT_DONE") {
+      console.log("Archivo exportado con éxito.");
+      console.log(`Export done: ${e.params}`); // Use JSON.stringify for better logging
+    }
+  });
+
 });
 
 // --- Iniciar el bot de Telegram ---
