@@ -2,9 +2,9 @@ const sos = require("securos");
 const { Telegraf } = require("telegraf");
 const fs = require("fs");
 const path = require("path");
-const eventNum = 0
+let eventNum = 0
 
-// --- Configuración (Considera usar variables de entorno para producción) ---
+
 const BOT_TOKEN = "7612145224:AAF6HVJjCdzDJsXw4NW3-rkfP7enSxLpRWQ";
 const CHAT_ID = "-4664148513";
 
@@ -13,7 +13,7 @@ const bot = new Telegraf(BOT_TOKEN);
 function formatNumberWithTemplate(number, templateName) {
     console.log(`Input: number="${number}", templateName="${templateName}"`);
 
-    // Extraer la parte del formato del template (ej. "2L-2D-3D")
+   
     const formatoPuro = templateName.split('_')[1]; // Tomará "2L-2D-3D"
 
     if (!formatoPuro) {
@@ -21,11 +21,9 @@ function formatNumberWithTemplate(number, templateName) {
         return number;
     }
 
-    // Parsear el formato para obtener las longitudes y tipos
-    // Esto resultará en algo como: [{tipo: 'L', longitud: 2}, {tipo: 'D', longitud: 2}, {tipo: 'D', longitud: 3}]
     const partesFormato = formatoPuro.split('-').map(parte => {
         const longitud = parseInt(parte.slice(0, -1), 10);
-        const tipo = parte.slice(-1); // 'L' para letra, 'D' para dígito
+        const tipo = parte.slice(-1); 
         return { tipo, longitud };
     });
 
@@ -36,18 +34,13 @@ function formatNumberWithTemplate(number, templateName) {
         const parte = partesFormato[i];
         const longitudDeseada = parte.longitud;
 
-        // Extraer la subcadena del número original
         const subcadena = number.substring(currentNumberIndex, currentNumberIndex + longitudDeseada);
 
-        // Añadir la subcadena al resultado
         formattedNumber += subcadena;
 
-        // Si no es la última parte, añadir un guion
         if (i < partesFormato.length - 1) {
             formattedNumber += '-';
         }
-
-        // Mover el índice para la próxima parte
         currentNumberIndex += longitudDeseada;
     }
 
@@ -68,8 +61,6 @@ function nolprdate(fechaOriginal) {
         fechaFormateada = fechaOriginal;
     }
     fechaFormateada = fechaFormateada.replace('T', ' ');
-    //console.log("Fecha original (nolprdate):", fechaOriginal);
-    //console.log("Fecha formateada (nolprdate):", fechaFormateada);
     return fechaFormateada;
 }
 
@@ -104,25 +95,31 @@ sos.connect(async function (core) {
     console.log("Securos conectado");
 
     core.registerEventHandler("IMAGE_EXPORT", "1", "EXPORT_DONE", async (e) => {
-
-         console.log("Archivo exportado con éxito.");
+        //console.log("EXPORT_DONE:", e);
+        if (e.action == "EXPORT_DONE") {
+            console.log("Archivo exportado con éxito.");
+            //console.log(`Export done: ${JSON.stringify(e.params)}`); // Mejor logueo
+        }
     });
 
     core.registerEventHandler("LPR_CAM", "*", "*", async (e) => {
         eventNum ++
         console.log(`evento: ${eventNum}`)
         console.log(`\n--- Evento LPR_CAM: ${e.action} ---`);
-
+        // Log completo para depuración
+        //console.log(`Parametros generales (e): ${JSON.stringify(e, null, 2)}`);
         console.log(e)
         let fileName;
         let htmlCaption;
         const exportDirectory = "C:\\export";
-        let tiempoParaSecuros; !
-        if(e.action === "CAR_LP_RECOGNIZED"){
+        let tiempoParaSecuros;
+
+        if (e.action === "CAR_LP_RECOGNIZED") {
             console.log("LPR_EVENT")
             const plate = formatNumberWithTemplate(e.params.number, e.params.template_name)
             const formattedDate = formatDateTimeString(e.params.best_view_date_time);
             tiempoParaSecuros = formatDateTime2export(e.params.best_view_date_time) 
+
             fileName = `lpr${formattedDate}.jpg`;
             htmlCaption = `
                 <b>Acceso Vehículo con placas.</b>\n\n
@@ -130,10 +127,11 @@ sos.connect(async function (core) {
                 Placa: <b>${e.params.number || 'N/A'}</b>
                 Placa formato: <b>${plate}</b>
             `;
-        }else{
+        } else {
             console.log("Else (No CAR_LP_RECOGNIZED):");
-            tiempoParaSecuros = nolprdate(e.params.time_iso);
+            tiempoParaSecuros = nolprdate(e.params.time_iso); 
             const fechaCompacta = tiempoParaSecuros.replace(/[- :.]/g, '');
+            //console.log(`Time to export string (No-LPR): ${tiempoParaSecuros}`);
             fileName = `nolpr${fechaCompacta}.jpg`;
             console.log(`File Name (No-LPR): ${fileName}`);
             htmlCaption = `
@@ -142,9 +140,10 @@ sos.connect(async function (core) {
             `;
         }
 
+
         if (typeof tiempoParaSecuros === 'undefined' || tiempoParaSecuros === null) {
              console.error("ERROR: tiempoParaSecuros es undefined/null. Esto no debería pasar.");
-             // Puedes lanzar un error o retornar aquí si esto es crítico
+
              return;
         }
 
@@ -165,9 +164,9 @@ sos.connect(async function (core) {
             core.doReact("IMAGE_EXPORT", "1", "EXPORT", params);
             console.log(`Solicitud de exportación para ${fileName} enviada.`);
 
-            // --- AGREGAR RETRASO DE 3 SEGUNDOS ---
+            // --- AGREGAR RETRASO DE 10 SEGUNDOS ---
             console.log(`Esperando 3 segundos antes de intentar enviar la imagen a Telegram...`);
-            await new Promise(resolve => setTimeout(resolve, 5000));
+            await new Promise(resolve => setTimeout(resolve, 10000));
 
             console.log(`Procediendo a enviar por Telegram.`);
 
