@@ -114,7 +114,9 @@ sos.connect(async function (core) {
         const exportDirectory = "C:\\export";
         let tiempoParaSecuros;
 
-        if (e.action === "CAR_LP_RECOGNIZED") {
+        if (e.action === "CAR_LP_RECOGNIZED" &&
+            e.params.number === '??????'
+        ) {
             console.log("LPR_EVENT")
             const plate = formatNumberWithTemplate(e.params.number, e.params.template_name)
             const formattedDate = formatDateTimeString(e.params.best_view_date_time);
